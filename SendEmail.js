@@ -1,31 +1,44 @@
 import nodemailer from "nodemailer";
 import { config } from "./Config.js";
 import { google } from "googleapis";
+import dotenv from 'dotenv'
+dotenv.config();
+
+
+
 
 const Email = async (options) => {
   const OAuth2 = google.auth.OAuth2;
-  const OAuth2_client = new OAuth2(
-    config.clientId,
-    config.clientSecret,
-    config.clientUrl
-  );
+const OAuth2_client = new OAuth2(
+  config.clientId,
+ config.clientSecret,
+  config.clientUrl
+);
+
+// // const mAccessToken = await new Promise((resolve, reject) => {
+// //   OAuth2_client.getAccessToken((err, token) => {
+// //     if (err) {
+// //       reject();
+// //     }
+// //     resolve(token);
+// //   });
+// // });
   try{
-
+  
   OAuth2_client.setCredentials({ refresh_token: config.refreshToken });
-  const myAccessToken = await OAuth2_client.getAccessToken();
-
+  const myAccessToken= await OAuth2_client.getAccessToken()
   let transpoter = nodemailer.createTransport({
     service: "gmail", //i use outlook
     auth: {
       type: 'OAuth2',
       user: config.user,
-      clientId: config.clientId,
+      clientId:config.clientId,
       clientSecret: config.clientSecret,
       refreshToken: config.refreshToken,
-      accessToken: myAccessToken,
+      accessToken:myAccessToken
     },
   });
-  await transpoter.sendMail(options, (err, info) => {
+   transpoter.sendMail(options, (err, info) => {
     if (err) {
       console.log(err);
       return;
@@ -34,13 +47,14 @@ const Email = async (options) => {
 }catch(err){
   console.error(err);
 }
+
 };
 
 // send email
 const EmailSender = ({ FirstName, LastName, email, number, message }) => {
   const options = {
     from: `MilesMotors <${config.user}>`,
-    to: "ayiendaglen@gmail.com",
+    to: "ayiendaglen@gmail.com ,kevinmbui@gmail.com,info@amschel.tech",
     subject: "Message From MILES MOTORS",
     html: `
         <div style="width: 100%; background-color: #f3f9ff; padding: 5rem 0">
